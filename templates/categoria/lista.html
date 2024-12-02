@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block titulo_page %} Listagem de Categoria {% endblock titulo_page %}
+
+{% block conteudo %}
+
+<button class="btn btn-primary">Nova Categoria</button>
+
+<p></p>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Ordem</th>
+            <th scope="col" style="width: 250px;">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in lista %}
+        <tr>
+            <td> {{item.id}}</td>
+            <td> {{item.nome}}</td>
+            <td>{{item.ordem}}</td>
+            <td>
+                <button class="btn btn-info text-white btn-sm me-1">Detalhes</button>
+                <button class="btn btn-warning btn-sm me-1">Alterar</button>
+                <button class="btn btn-danger btn-sm">Excluir</button>
+            </td>
+        </tr>
+
+
+        {% endfor %}
+      
+    </tbody>
+</table>
+
+{% endblock conteudo %}
