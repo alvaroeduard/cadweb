@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block titulo_conteudo %} Inserir Nova Categoria {% endblock titulo_conteudo %}
+
+{% block conteudo %}
+
+<form method="post">
+  {% csrf_token %}
+  <!-- Renderiza o formulário com os widgets configurados no Django Form -->
+  {{ form.as_p }}
+  
+  <p>
+      <button class="btn btn-primary" type="submit">Enviar</button>
+      <a href="{% url 'categoria' %}" class="btn btn-secondary">Voltar</a>
+  </p>
+</form>
+  
+
+{% endblock conteudo %}
