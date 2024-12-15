@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block titulo_conteudo %} Listagem de Clientes {% endblock titulo_conteudo %}
+
+{% block conteudo %}
+
+<button class="btn btn-primary" onclick="location.href='{% url 'form_cliente' %}'">Novo Cliente</button>
+<button class="btn btn-secondary" onclick="window.location.reload();">Recarregar</button>
+
+<p></p>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nome</th>
+            <th scope="col">CPF</th>
+            <th scope="col">Data de Nascimento</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in lista %}
+        <tr>
+            <td> {{item.id}}</td>
+            <td> {{item.nome}}</td>
+            <td> {{item.cpf}}</td>
+            <td>{{item.datanasc}}</td>
+            <td>
+                <button class="btn btn-info text-white btn-sm me-1" >Novo Pedido</button>
+                <button class="btn btn-warning btn-sm me-1" onclick="location.href='{% url "editar_cliente" item.id %}'">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="location.href='{% url "remover_cliente" item.id %}'">Remover</button>
+            </td>
+            
+        </tr>
+
+
+        {% endfor %}
+      
+    </tbody>
+</table>
+
+{% endblock conteudo %}
