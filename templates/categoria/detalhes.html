@@ -3,28 +3,21 @@
 {% block titulo_conteudo %} Detalhes da Categoria {% endblock titulo_conteudo %}
 
 {% block conteudo %}
-<div class="card">
-    <div class="card-header bg-primary text-white">
-        Detalhes da Categoria
-    </div>
-    <div class="card-body">
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <th scope="row">ID:</th>
-                    <td>{{ categoria.id }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Nome:</th>
-                    <td>{{ categoria.nome }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Ordem:</th>
-                    <td>{{ categoria.ordem }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <a href="{% url 'categoria' %}" class="btn btn-secondary">Voltar</a>
-    </div>
-</div>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th scope="row">ID:</th>
+            <td>{{ categoria.id }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Nome:</th>
+            <td>{{ categoria.nome }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Ordem:</th>
+            <td>{{ categoria.ordem }}</td>
+        </tr>
+    </tbody>
+</table>
+<a href="{% url 'categoria' %}" class="btn btn-secondary">Voltar</a>
 {% endblock conteudo %}

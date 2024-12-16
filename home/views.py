@@ -83,10 +83,12 @@ def remover_categoria(request, id):
 
 
 def detalhes_categoria(request, id):
-    categoria = get_object_or_404(Categoria, pk=id)
+    try:
+        categoria = Categoria.objects.get(pk=id)
+    except Categoria.DoesNotExist:
+        messages.error(request, "Esta categoria já foi removida ou não foi encontrada.")
+        return redirect('categoria')  # Redireciona para a listagem
     return render(request, 'categoria/detalhes.html', {'categoria': categoria})
-
-
 
 def clientes(request):
     contexto = {
