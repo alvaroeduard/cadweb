@@ -22,5 +22,5 @@ class Cliente(models.Model):
     def datanascimento(self):
         """Retorna a data de nascimento no formato DD/MM/AAAA"""
         if self.datanasc:
-            return self.datanasc.strftime('%d/%m/%Y')
+            return self.datanasc.strftime("%d/%m/%Y")
         return None
