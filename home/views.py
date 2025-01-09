@@ -70,7 +70,7 @@ def remover_categoria(request, id):
     try:
         categoria = Categoria.objects.get(pk=id)
     except Categoria.DoesNotExist:
-        messages.error(request, "Esta categoria já foi removida ou não foi encontrada.")
+        messages.error(request, "Registro não encontrado.")
         return redirect('categoria')  # Redireciona para a listagem
     
     if request.method == 'POST':
@@ -86,7 +86,7 @@ def detalhes_categoria(request, id):
     try:
         categoria = Categoria.objects.get(pk=id)
     except Categoria.DoesNotExist:
-        messages.error(request, "Esta categoria já foi removida ou não foi encontrada.")
+        messages.error(request, "Registro não encontrado.")
         return redirect('categoria')  # Redireciona para a listagem
     return render(request, 'categoria/detalhes.html', {'categoria': categoria})
 
@@ -133,7 +133,7 @@ def remover_cliente(request, id):
     try:
         cliente = Cliente.objects.get(pk=id)
     except Cliente.DoesNotExist:
-        messages.error(request, "Este cliente já foi removido ou não foi encontrado.")
+        messages.error(request, 'Registro não encontrado')
         return redirect('clientes')  # Redireciona para a listagem
     
     if request.method == 'POST':
@@ -143,3 +143,65 @@ def remover_cliente(request, id):
     
     # Se for um GET, renderiza a página de confirmação
     return render(request, 'clientes/confirmar_exclusao.html', {'cliente': cliente})
+
+def produto(request):
+    contexto = {
+        'lista': Produto.objects.all().order_by('id'),
+    }
+    return render(request, 'produto/lista.html',contexto)
+
+def form_produto(request):
+    if request.method == 'POST':
+       form = ProdutoForm(request.POST) # instancia o modelo com os dados do form
+       if form.is_valid():# faz a validação do formulário
+            form.save() # salva a instancia do modelo no banco de dados
+            messages.success(request, "Produto adicionado com sucesso!")
+            return redirect('produto') # redireciona para a listagem
+    else:# método é get, novo registro
+        form = ProdutoForm() # formulário vazio
+    contexto = {
+        'form':form,
+    }
+    return render(request, 'produto/form.html', contexto)
+
+def editar_produto(request, id):
+    try:
+        produto = Produto.objects.get(pk=id)
+    except Produto.DoesNotExist:
+        # Caso o registro não seja encontrado, exibe a mensagem de erro
+        messages.error(request, 'Registro não encontrado')
+        return redirect('produto')  # Redireciona para a listagem
+
+    if request.method == 'POST':
+        form = ProdutoForm(request.POST, instance=produto)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Operação realizada com Sucesso')
+            return redirect('produto')
+    else:
+        form = ProdutoForm(instance=produto)
+
+    return render(request, 'produto/form.html', {'form': form})
+
+def remover_produto(request, id):
+    try:
+        produto = Produto.objects.get(pk=id)
+    except Produto.DoesNotExist:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('produto')  # Redireciona para a listagem
+    
+    if request.method == 'POST':
+        produto.delete()
+        messages.success(request, 'Operação realizada com Sucesso')
+        return redirect('produto')  # Redireciona para a listagem
+    
+    # Se for um GET, renderiza a página de confirmação
+    return render(request, 'produto/confirmar_exclusao.html', {'produto': produto})
+
+def detalhes_produto(request, id):
+    try:
+        produto = Produto.objects.get(pk=id)
+    except Produto.DoesNotExist:
+        messages.error(request, "Registro não encontrado.")
+        return redirect('produto')  # Redireciona para a listagem
+    return render(request, 'produto/detalhes.html', {'produto': produto})
