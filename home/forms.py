@@ -90,3 +90,13 @@ class ProdutoForm(forms.ModelForm):
         if preco is None or preco <= 0.01:  # Verifica se o preço é inválido ou menor que 1 centavo.
             raise forms.ValidationError("O preço do produto deve ser maior que 1 centavo.")
         return preco
+    
+class EstoqueForm(forms.ModelForm):
+    class Meta:
+        model = Estoque
+        fields =['produto','qtde']
+
+        widgets = {
+            'produto': forms.HiddenInput(), #campo oculdo para armazenar o ID do produto
+            'qtde': forms.TextInput(attrs={'class':'inteiro form-control'}),
+        }

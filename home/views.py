@@ -205,3 +205,23 @@ def detalhes_produto(request, id):
         messages.error(request, "Registro não encontrado.")
         return redirect('produto')  # Redireciona para a listagem
     return render(request, 'produto/detalhes.html', {'produto': produto})
+
+def ajustar_estoque(request, id):
+    try:
+        produto = Produto.objects.get(pk=id)
+        estoque = produto.estoque  # pega o objeto estoque relacionado ao produto
+    except Produto.DoesNotExist:
+        messages.error(request, "Registro não encontrado.")
+        return redirect('produto')
+    
+    if request.method == 'POST':
+        form = EstoqueForm(request.POST, instance=estoque)
+        if form.is_valid():
+            estoque = form.save()
+            lista = [estoque.produto]
+            messages.success(request, "Operação realizada com sucesso.")
+            return render(request, 'produto/lista.html', {'lista': lista})
+    else:
+        form = EstoqueForm(instance=estoque)
+
+    return render(request, 'produto/estoque.html', {'form': form})
