@@ -11,8 +11,9 @@
         </div>
         <div class="col-md-8">
             <div class="card-body">
-                <p class="card-text"><strong>Nome:</strong> {{ produto.nome}}</p>
                 <p class="card-text"><strong>ID:</strong> {{ produto.id }}</p>
+                <p class="card-text"><strong>Nome:</strong> {{ produto.nome}}</p>
+                <p class="card-text"><strong>Qtde em estoque:</strong> {{ produto.estoque.qtde }}</p>
                 <p class="card-text"><strong>Preço:</strong> R$ {{ produto.preco }}</p>
             </div>
         </div>
