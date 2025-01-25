@@ -101,3 +101,11 @@ class EstoqueForm(forms.ModelForm):
             'produto': forms.HiddenInput(), #campo oculdo para armazenar o ID do produto
             'qtde': forms.TextInput(attrs={'class':'inteiro form-control'}),
         }
+
+class PedidoForm(forms.ModelForm):
+    class Meta:
+        model = Pedido
+        fields = ['cliente']
+        widgets = {
+            'cliente': forms.HiddenInput(),  # Campo oculto para armazenar o ID
+        }
