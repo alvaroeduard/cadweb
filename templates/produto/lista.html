@@ -5,7 +5,7 @@
 {% block conteudo %} 
 
 <div class="barrabotoes">
-<button class="btn btn-primary" onclick="location.href='{% url 'form_produto' %}'">Inserir Novo</button>
+<a href="{% url 'form_produto' %}" class="btn btn-primary">Inserir Novo</a>
 <button class="btn btn-secondary" onclick="window.location.reload();">Recarregar</button>
 
 </div>
@@ -32,10 +32,10 @@
         <td>{{ produto.categoria }}</td>
         <td>{{ produto.estoque.qtde }}</td>
         <td>
-          <button class="btn btn-info text-white btn-sm me-1" onclick="location.href='{% url "detalhes_produto" produto.id %}'">Detalhes</button>
-          <button class="btn btn-success text-white btn-sm me-1" onclick="location.href='{% url "ajustar_estoque" produto.id %}'">Estoque</button>
-          <button class="btn btn-warning btn-sm me-1" onclick="location.href='{% url "editar_produto" produto.id %}'">Editar</button>
-          <button class="btn btn-danger btn-sm" onclick="location.href='{% url "remover_produto" produto.id %}'">Remover</button>
+          <a href="{% url 'detalhes_produto' produto.id %}" class="btn btn-info text-white btn-sm me-1">Detalhes</a>
+          <a href="{% url 'ajustar_estoque' produto.id %}" class="btn btn-success text-white btn-sm me-1">Estoque</a>
+          <a href="{% url 'editar_produto' produto.id %}" class="btn btn-warning btn-sm me-1">Editar</a>
+          <a href="{% url 'remover_produto' produto.id %}" class="btn btn-danger btn-sm">Remover</a>
         </td>
       </tr>
       {% endfor %}

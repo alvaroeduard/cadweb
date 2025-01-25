@@ -276,3 +276,17 @@ def novo_pedido(request,id):
             pedido = form.save()
             return redirect('pedido')
         
+def remover_pedido(request, id):
+    try:
+        pedido = Pedido.objects.get(pk=id)
+    except Pedido.DoesNotExist:
+        messages.error(request, 'Registro não encontrado')
+        return redirect('pedido')  # Redireciona para a listagem
+    
+    if request.method == 'POST':
+        pedido.delete()
+        messages.success(request, "Pedido removido com sucesso!")
+        return redirect('pedido')  # Redireciona para a listagem
+    
+    # Se for um GET, renderiza a página de confirmação
+    return render(request, 'pedido/confirmar_exclusao.html', {'pedido': pedido})

@@ -4,7 +4,7 @@
 
 {% block conteudo %}
 
-<button class="btn btn-primary" onclick="location.href='{% url 'form_cliente' %}'">Novo Cliente</button>
+<a href="{% url 'form_cliente' %}" class="btn btn-primary">Novo Cliente</a>
 <button class="btn btn-secondary" onclick="window.location.reload();">Recarregar</button>
 
 <p></p>
@@ -27,9 +27,9 @@
             <td> {{item.cpf}}</td>
             <td>{{item.datanascimento}}</td>
             <td>
-                <button onclick="location='{% url 'novo_pedido' item.id %}'" type="button" class="btn btn-primary btn-sm">Novo Pedido</button>
-                <button class="btn btn-warning btn-sm me-1" onclick="location.href='{% url "editar_cliente" item.id %}'">Editar</button>
-                <button class="btn btn-danger btn-sm" onclick="location.href='{% url "remover_cliente" item.id %}'">Remover</button>
+                <a href="{% url 'novo_pedido' item.id %}" class="btn btn-primary btn-sm">Novo Pedido</a>
+                <a href="{% url 'editar_cliente' item.id %}" class="btn btn-warning btn-sm me-1">Editar</a>
+                <a href="{% url 'remover_cliente' item.id %}" class="btn btn-danger btn-sm">Remover</a>
             </td>
             
         </tr>

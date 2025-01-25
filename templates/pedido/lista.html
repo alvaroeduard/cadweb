@@ -8,9 +8,8 @@
 
 
 <div class="barrabotoes">
+    <a href="{% url 'clientes' %}" class="btn btn-primary">Lista Clientes</a>
     <button class="btn btn-secondary" onclick="window.location.reload();">Recarregar</button>
-
-
 </div>
 
 
@@ -38,9 +37,7 @@
         <td>?</td>      
         <td>
           <button onClick="location=''" type="button" class="btn btn-primary btn-sm">Detalhes</button>
-          <a href="" class="btn btn-danger btn-sm" 
-          onclick="return confirm('Tem certeza que deseja remover este registro?');">Remover</a>
-        </td>
+          <a href="{% url 'remover_pedido' pedido.id %}" class="btn btn-danger btn-sm">Remover</a>
       </tr>
       {% endfor %}
     </tbody>
