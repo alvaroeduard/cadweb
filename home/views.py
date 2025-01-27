@@ -290,3 +290,25 @@ def remover_pedido(request, id):
     
     # Se for um GET, renderiza a página de confirmação
     return render(request, 'pedido/confirmar_exclusao.html', {'pedido': pedido})
+
+def detalhes_pedido(request, id):
+    try:
+        pedido = Pedido.objects.get(pk=id)
+    except Pedido.DoesNotExist:
+        # Caso o registro não seja encontrado, exibe a mensagem de erro
+        messages.error(request, 'Registro não encontrado')
+        return redirect('pedido')  # Redireciona para a listagem    
+    
+    if request.method == 'GET':
+        itemPedido = ItemPedido(pedido=pedido)
+        form = ItemPedidoForm(instance=itemPedido)
+    else:
+        form = ItemPedidoForm(request.POST)
+        # aguardando implementação POST, salvar item
+    
+    contexto = {
+        'pedido': pedido,
+        'form': form,
+    }
+    return render(request, 'pedido/detalhes.html',contexto )
+

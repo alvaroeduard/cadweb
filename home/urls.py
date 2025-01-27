@@ -25,4 +25,5 @@ urlpatterns = [
     path('pedido', views.pedido, name="pedido"),
     path('novo_pedido/<int:id>', views.novo_pedido, name='novo_pedido'),
     path('remover_pedido/<int:id>', views.remover_pedido, name='remover_pedido'),
+    path('detalhes_pedido/<int:id>', views.detalhes_pedido, name='detalhes_pedido'),
 ]
