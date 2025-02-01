@@ -9,6 +9,7 @@
 
 <div class="barrabotoes">
     <a href="{% url 'clientes' %}" class="btn btn-primary">Lista Clientes</a>
+    <a href="{% url 'form_cliente' %}" class="btn btn-primary">Inserir Novo</a>
     <button class="btn btn-secondary" onclick="window.location.reload();">Recarregar</button>
 </div>
 
@@ -33,8 +34,8 @@
         <td>{{ pedido.cliente.nome }}</td>
         <td>{{ pedido.data_pedidof}}</td>
         <td>{{ pedido.get_status_display }}</td>
-        <td>?</td>  
-        <td>?</td>      
+        <td>{{ pedido.qtdeItens}}</td>  
+        <td>{{ pedido.total}}</td>
         <td>
           <a href="{% url 'detalhes_pedido' pedido.id %}" class="btn btn-primary btn-sm">Detalhes</a>
           <a href="{% url 'remover_pedido' pedido.id %}" class="btn btn-danger btn-sm">Remover</a>

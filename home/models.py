@@ -1,6 +1,8 @@
 import locale
 from django.db import models
 from datetime import date
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
@@ -38,6 +40,17 @@ class Produto(models.Model):
     def estoque(self):
         estoque_item, flag_created = Estoque.objects.get_or_create(produto=self, defaults={'qtde': 0})
         return estoque_item
+    
+    @receiver(post_save, sender='home.Produto')  # Substitua 'suaapp' pelo nome do seu app
+    def atualizar_preco_pedidos(sender, instance, **kwargs):
+        if instance.pk:  # Verifica se é uma atualização, não uma criação
+            try:
+                produto_antigo = Produto.objects.get(pk=instance.pk)
+                if produto_antigo.preco != instance.preco:
+                    # Atualiza todos os itens de pedido vinculados a este produto
+                    ItemPedido.objects.filter(produto=instance).update(preco=instance.preco)
+            except Produto.DoesNotExist:
+                pass
 
 class Estoque(models.Model):
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
@@ -78,6 +91,17 @@ class Pedido(models.Model):
         if self.data_pedido:
             return self.data_pedido.strftime("%d/%m/%Y")
         return None
+    
+    @property
+    def total(self):
+        """Calcula o total de todos os itens no pedido, formatado como moeda local"""
+        total = sum(item.qtde * item.preco for item in self.itempedido_set.all())
+        return total
+
+    @property
+    def qtdeItens(self):
+        """Conta a qtde de itens no pedido, """
+        return self.itempedido_set.count()  
 
 class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
@@ -87,4 +111,10 @@ class ItemPedido(models.Model):
 
 
     def __str__(self):
-        return f"{self.produto.nome} (Qtd: {self.qtde}) - Preço Unitário: {self.preco}"        
+        return f"{self.produto.nome} (Qtd: {self.qtde}) - Preço Unitário: {self.preco}" 
+    
+    @property
+    def totalItem(self):
+        return self.qtde * self.preco # Calcula o total
+    
+      
