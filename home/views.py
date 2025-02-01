@@ -6,6 +6,7 @@ from .models import Categoria
 from django.http import JsonResponse
 from django.apps import apps
 from django.db import transaction
+from .models import Pedido, ItemPedido
 
 def index(request):
     return render(request,'index.html')
@@ -287,16 +288,22 @@ def remover_pedido(request, id):
     try:
         pedido = Pedido.objects.get(pk=id)
     except Pedido.DoesNotExist:
-        messages.error(request, 'Registro não encontrado')
-        return redirect('pedido')  # Redireciona para a listagem
-    
-    if request.method == 'POST':
+        messages.error(request, "Pedido não encontrado.")
+        return redirect('pedido')
+
+    with transaction.atomic():
+        # Altere "itens" para "itempedido_set" (padrão do Django)
+        for item in pedido.itempedido_set.all():
+            produto = item.produto
+            quantidade = item.qtde
+            estoque = produto.estoque
+            estoque.qtde += quantidade
+            estoque.save()
+
         pedido.delete()
-        messages.success(request, "Pedido removido com sucesso!")
-        return redirect('pedido')  # Redireciona para a listagem
-    
-    # Se for um GET, renderiza a página de confirmação
-    return render(request, 'pedido/confirmar_exclusao.html', {'pedido': pedido})
+
+    messages.success(request, "Pedido e itens removidos com sucesso!")
+    return redirect('pedido')
 
 def detalhes_pedido(request, id):
     try:
