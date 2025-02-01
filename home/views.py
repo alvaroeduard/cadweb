@@ -345,44 +345,44 @@ def editar_item_pedido(request, id):
         item_pedido = ItemPedido.objects.get(pk=id)
     except ItemPedido.DoesNotExist:
         messages.error(request, "Registro não encontrado")
-        return redirect('detalhes_pedido')  #redirecionamento
+        return redirect('detalhes_pedido', id=item_pedido.pedido.id)
 
     pedido = item_pedido.pedido
-    quantidade_anterior = item_pedido.qtde  # Armazena a quantidade anterior
-    
+    produto_anterior = item_pedido.produto
+    quantidade_anterior = item_pedido.qtde  
+
     if request.method == 'POST':
-        form = ItemPedidoForm(request.POST, instance=item_pedido)  
-        if form.is_valid():  # 
-            item_pedido = form.save(commit=False)
-            produto = item_pedido.produto
-            estoque = produto.estoque
+        form = ItemPedidoForm(request.POST, instance=item_pedido)
+        if form.is_valid():
+            novo_item_pedido = form.save(commit=False)
+            novo_produto = novo_item_pedido.produto
+            nova_quantidade = novo_item_pedido.qtde
 
-            # Atualiza o preço do item pedido com o preço atual do produto
-            item_pedido.preco = produto.preco
-
-            # Calcula a diferença na quantidade
-            delta = item_pedido.qtde - quantidade_anterior
-
-            if delta > 0:  # Aumento na quantidade
-                if estoque.qtde < delta:
-                    messages.error(request, f"Estoque insuficiente. Disponível: {estoque.qtde}")
+            with transaction.atomic():
+                # Verificar estoque do novo produto primeiro
+                estoque_novo = novo_produto.estoque
+                if nova_quantidade > estoque_novo.qtde:
+                    messages.error(request, 'Estoque insuficiente para este produto.')
                     return redirect('detalhes_pedido', id=pedido.id)
                 
-                estoque.qtde -= delta
-            elif delta < 0:  # Redução na quantidade
-                estoque.qtde += abs(delta)
-            
-            try:
-                with transaction.atomic():  # Transação atômica
-                    estoque.save()
-                    item_pedido.save()
-                    messages.success(request, "Item atualizado com sucesso!")
-            except Exception as e:
-                messages.error(request, f"Erro ao atualizar: {str(e)}")
-            
+                # Restaurar estoque do produto anterior
+                estoque_anterior = produto_anterior.estoque
+                estoque_anterior.qtde += quantidade_anterior
+                estoque_anterior.save()
+
+                # Atualizar estoque do novo produto
+                estoque_novo.qtde -= nova_quantidade
+                estoque_novo.save()
+
+                # Atualizar o item do pedido com o preço atual do novo produto
+                novo_item_pedido.preco = novo_produto.preco
+                novo_item_pedido.save()
+
+            messages.success(request, 'Item do pedido atualizado com sucesso!')
             return redirect('detalhes_pedido', id=pedido.id)
         else:
-            messages.error(request, "Erros no formulário")
+            messages.error(request, 'Erro ao atualizar o item do pedido.')
+
     else:
         form = ItemPedidoForm(instance=item_pedido)
 
@@ -392,6 +392,7 @@ def editar_item_pedido(request, id):
         'pedido': pedido
     }
     return render(request, 'pedido/detalhes.html', contexto)
+
 
 def remover_item_pedido(request, id):
     try:
