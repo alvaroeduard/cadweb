@@ -27,5 +27,8 @@ urlpatterns = [
     path('remover_pedido/<int:id>', views.remover_pedido, name='remover_pedido'),
     path('detalhes_pedido/<int:id>', views.detalhes_pedido, name='detalhes_pedido'),
     path('detalhes_pedido/<int:id>/editar', views.editar_item_pedido, name='editar_item_pedido'),
-    path('detalhes_pedido//remover_item/<int:id>/', views.remover_item_pedido, name='remover_item_pedido'),
+    path('detalhes_pedido/remover_item/<int:id>/', views.remover_item_pedido, name='remover_item_pedido'),
+    path('form_pagamento/<int:id>/', views.form_pagamento, name='form_pagamento'),
+    path('pagamento/editar/<int:id>/', views.editar_pagamento, name='editar_pagamento'),
+    path('pagamento/remover/<int:id>/', views.remover_pagamento, name='remover_pagamento'),
 ]

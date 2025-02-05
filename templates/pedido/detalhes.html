@@ -23,7 +23,7 @@
     </p>
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary btn-sm">Salvar Produto</button>
-    <button type="button" onclick="location=''" class="btn btn-primary btn-sm">Registrar Pagamento</button>
+    <a href="{% url 'form_pagamento' pedido.id %}" class="btn btn-primary btn-sm">Registrar Pagamento</a>
 </form>
 
 <hr>
@@ -61,6 +61,10 @@
 </table>
 
 <p><strong>Total do pedido:</strong> R$ {{ pedido.total}}</p>
+<p><strong>Total Pago:</strong> R$ {{ pedido.total_pago}}</p>
+<p><strong>Débito:</strong> R$ {{ pedido.debito}}</p>
+
+<a href="{% url 'pedido' %}" class="btn btn-secondary">Voltar</a>
 
 {% endblock conteudo %}
 

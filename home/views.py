@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.apps import apps
 from django.db import transaction
 from .models import Pedido, ItemPedido
+from django.db.models import Sum
 
 def index(request):
     return render(request,'index.html')
@@ -364,7 +365,7 @@ def editar_item_pedido(request, id):
         item_pedido = ItemPedido.objects.get(pk=id)
     except ItemPedido.DoesNotExist:
         messages.error(request, "Registro não encontrado")
-        return redirect('pedido')  # Redirecionamento genérico
+        return redirect('pedido')  # Redirecionamento 
 
     pedido = item_pedido.pedido
     produto_anterior = item_pedido.produto
@@ -473,3 +474,87 @@ def remover_item_pedido(request, id):
 
     # Redireciona de volta para a página de detalhes do pedido
     return redirect('detalhes_pedido', id=pedido_id)
+
+def form_pagamento(request, id):
+    try:
+        pedido = Pedido.objects.get(pk=id)
+    except Pedido.DoesNotExist:
+        messages.error(request, 'Pedido não encontrado')
+        return redirect('pedido')
+
+    if request.method == 'POST':
+        # Create a payment instance linked to the order
+        pagamento = Pagamento(pedido=pedido)
+        form = PagamentoForm(request.POST, instance=pagamento)
+        if form.is_valid():
+            # Calculate total payments including the new one
+            total_pagamentos = Pagamento.objects.filter(pedido=pedido).aggregate(total=Sum('valor'))['total'] or 0
+            novo_valor = form.cleaned_data['valor']
+            total_com_novo = total_pagamentos + novo_valor
+
+            if total_com_novo > pedido.total:
+                messages.error(request, 'O valor do pagamento excede o débito restante.')
+            else:
+                form.save()
+                messages.success(request, 'Pagamento cadastrado com sucesso!')
+                return redirect('pedido', id=pedido.id)
+        else:
+            messages.error(request, 'Erro no formulário.')
+    else:
+        # GET request: prepare a new payment form
+        form = PagamentoForm(instance=Pagamento(pedido=pedido))
+
+    contexto = {
+        'pedido': pedido,
+        'form': form,
+    }
+    return render(request, 'pedido/pagamento.html', contexto)
+
+def editar_pagamento(request, id):
+    try:
+        pagamento = Pagamento.objects.get(pk=id)
+    except Pagamento.DoesNotExist:
+        messages.error(request, 'Pagamento não encontrado')
+        return redirect('pedido')
+
+    pedido = pagamento.pedido
+
+    if request.method == 'POST':
+        form = PagamentoForm(request.POST, instance=pagamento)
+        if form.is_valid():
+            novo_valor = form.cleaned_data['valor']
+            # Calcular o total de pagamentos realizados, excluindo o pagamento que está sendo editado
+            total_pagamentos = Pagamento.objects.filter(pedido=pedido).exclude(id=pagamento.id).aggregate(total=Sum('valor'))['total'] or 0
+
+            # Somar com o novo pagamento
+            total_com_novo = total_pagamentos + novo_valor
+
+            if total_com_novo > pedido.total:
+                messages.error(request, 'O valor excede o débito restante.')
+            else:
+                form.save()
+                messages.success(request, 'Pagamento atualizado com sucesso!')
+                return redirect('form_pagamento', id=pagamento.id)
+        else:
+            messages.error(request, 'Erro no formulário.')
+    else:
+        form = PagamentoForm(instance=pagamento)
+
+    contexto = {
+        'form': form,
+        'pagamento': pagamento,
+        'pedido': pedido,
+    }
+    return render(request, 'pedido/pagamento.html', contexto)
+
+def remover_pagamento(request, id):
+    try:
+        pagamento = Pagamento.objects.get(pk=id)
+    except Pagamento.DoesNotExist:
+        messages.error(request, 'Pagamento não encontrado')
+        return redirect('pedido')
+
+    pedido_id = pagamento.pedido.id
+    pagamento.delete()
+    messages.success(request, 'Pagamento removido com sucesso!')
+    return redirect('form_pagamento', id=pedido_id)
