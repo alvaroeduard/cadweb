@@ -497,7 +497,7 @@ def form_pagamento(request, id):
             else:
                 form.save()
                 messages.success(request, 'Pagamento cadastrado com sucesso!')
-                return redirect('pedido', id=pedido.id)
+                return redirect('form_pagamento', id=pedido.id)
         else:
             messages.error(request, 'Erro no formulário.')
     else:
@@ -534,7 +534,7 @@ def editar_pagamento(request, id):
             else:
                 form.save()
                 messages.success(request, 'Pagamento atualizado com sucesso!')
-                return redirect('form_pagamento', id=pagamento.id)
+                return redirect('editar_pagamento', id=pagamento.id)
         else:
             messages.error(request, 'Erro no formulário.')
     else:
