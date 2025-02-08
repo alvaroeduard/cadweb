@@ -8,16 +8,18 @@ from django.apps import apps
 from django.db import transaction
 from .models import Pedido, ItemPedido
 from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
+
 
 def index(request):
     return render(request,'index.html')
-
+@login_required
 def categoria(request):
     contexto = {
         'lista': Categoria.objects.all().order_by('id'),
     }
     return render(request, 'categoria/lista.html',contexto)
-
+@login_required
 def form_categoria(request):
     if request.method == 'POST':
        form = CategoriaForm(request.POST) # instancia o modelo com os dados do form
@@ -33,7 +35,7 @@ def form_categoria(request):
     return render(request, 'categoria/formulario.html', contexto)
 
 ## redireciona para a view de listagem ####
-
+@login_required
 def editar_categoria(request, id):
     try:
         categoria = Categoria.objects.get(pk=id)
@@ -70,7 +72,7 @@ def editar_categoria(request, id):
  #        form = CategoriaForm(instance=categoria)
  #   return render(request, 'categoria/formulario.html', {'form': form,})
 
-
+@login_required
 def remover_categoria(request, id):
     try:
         categoria = Categoria.objects.get(pk=id)
@@ -86,7 +88,7 @@ def remover_categoria(request, id):
     # Se for um GET, renderiza a página de confirmação
     return render(request, 'categoria/confirmar_exclusao.html', {'categoria': categoria})
 
-
+@login_required
 def detalhes_categoria(request, id):
     try:
         categoria = Categoria.objects.get(pk=id)
@@ -94,13 +96,13 @@ def detalhes_categoria(request, id):
         messages.error(request, "Registro não encontrado.")
         return redirect('categoria')  # Redireciona para a listagem
     return render(request, 'categoria/detalhes.html', {'categoria': categoria})
-
+@login_required
 def clientes(request):
     contexto = {
         'lista': Cliente.objects.all().order_by('id'),
     }
     return render(request, 'clientes/lista.html',contexto)
-
+@login_required
 def form_cliente(request):
     if request.method == 'POST':
        form = ClienteForm(request.POST) # instancia o modelo com os dados do form
@@ -114,7 +116,7 @@ def form_cliente(request):
         'form':form,
     }
     return render(request, 'clientes/formulario.html', contexto)
-
+@login_required
 def editar_cliente(request, id):
     try:
         cliente = Cliente.objects.get(pk=id)
@@ -133,7 +135,7 @@ def editar_cliente(request, id):
         form = ClienteForm(instance=cliente)
 
     return render(request, 'clientes/formulario.html', {'form': form})
-
+@login_required
 def remover_cliente(request, id):
     try:
         cliente = Cliente.objects.get(pk=id)
@@ -148,13 +150,13 @@ def remover_cliente(request, id):
     
     # Se for um GET, renderiza a página de confirmação
     return render(request, 'clientes/confirmar_exclusao.html', {'cliente': cliente})
-
+@login_required
 def produto(request):
     contexto = {
         'lista': Produto.objects.all().order_by('id'),
     }
     return render(request, 'produto/lista.html',contexto)
-
+@login_required
 def form_produto(request):
     if request.method == 'POST':
        form = ProdutoForm(request.POST) # instancia o modelo com os dados do form
@@ -168,7 +170,7 @@ def form_produto(request):
         'form':form,
     }
     return render(request, 'produto/form.html', contexto)
-
+@login_required
 def editar_produto(request, id):
     try:
         produto = Produto.objects.get(pk=id)
@@ -193,7 +195,7 @@ def editar_produto(request, id):
         form = ProdutoForm(instance=produto)
 
     return render(request, 'produto/form.html', {'form': form})
-
+@login_required
 def remover_produto(request, id):
     try:
         produto = Produto.objects.get(pk=id)
@@ -208,7 +210,7 @@ def remover_produto(request, id):
     
     # Se for um GET, renderiza a página de confirmação
     return render(request, 'produto/confirmar_exclusao.html', {'produto': produto})
-
+@login_required
 def detalhes_produto(request, id):
     try:
         produto = Produto.objects.get(pk=id)
@@ -216,7 +218,7 @@ def detalhes_produto(request, id):
         messages.error(request, "Registro não encontrado.")
         return redirect('produto')  # Redireciona para a listagem
     return render(request, 'produto/detalhes.html', {'produto': produto})
-
+@login_required
 def ajustar_estoque(request, id):
     try:
         produto = Produto.objects.get(pk=id)
@@ -236,16 +238,16 @@ def ajustar_estoque(request, id):
         form = EstoqueForm(instance=estoque)
 
     return render(request, 'produto/estoque.html', {'form': form})
-
+@login_required
 def teste1(request):
     return render(request, 'testes/teste1.html')
-
+@login_required
 def teste2(request):
     return render(request, 'testes/teste2.html')
-
+@login_required
 def teste3(request):
     return render(request, 'testes/teste3.html')
-
+@login_required
 def buscar_dados(request, app_modelo):
     termo = request.GET.get('q', '') # pega o termo digitado
     try:
@@ -262,11 +264,11 @@ def buscar_dados(request, app_modelo):
     resultados = modelo.objects.filter(nome__icontains=termo)
     dados = [{'id': obj.id, 'nome': obj.nome} for obj in resultados]
     return JsonResponse(dados, safe=False)
-
+@login_required
 def pedido(request):
     lista = Pedido.objects.all().order_by('-id')
     return render(request, 'pedido/lista.html', {'lista': lista})
-
+@login_required
 def novo_pedido(request,id):
     if request.method == 'GET':
         try:
@@ -284,7 +286,7 @@ def novo_pedido(request,id):
         if form.is_valid():
             pedido = form.save()
             return redirect('detalhes_pedido', id=pedido.id)
-        
+@login_required        
 def remover_pedido(request, id):
     try:
         pedido = Pedido.objects.get(pk=id)
@@ -305,7 +307,7 @@ def remover_pedido(request, id):
 
     messages.success(request, "Pedido e itens removidos com sucesso!")
     return redirect('pedido')
-
+@login_required
 def detalhes_pedido(request, id):
     try:
         pedido = Pedido.objects.get(pk=id)
@@ -359,7 +361,7 @@ def detalhes_pedido(request, id):
         'form': form,
     }
     return render(request, 'pedido/detalhes.html', contexto)
-
+@login_required
 def editar_item_pedido(request, id):
     try:
         item_pedido = ItemPedido.objects.get(pk=id)
@@ -454,7 +456,7 @@ def editar_item_pedido(request, id):
     }
     return render(request, 'pedido/detalhes.html', contexto)
 
-
+@login_required
 def remover_item_pedido(request, id):
     try:
         item_pedido = ItemPedido.objects.get(pk=id)
@@ -474,7 +476,7 @@ def remover_item_pedido(request, id):
 
     # Redireciona de volta para a página de detalhes do pedido
     return redirect('detalhes_pedido', id=pedido_id)
-
+@login_required
 def form_pagamento(request, id):
     try:
         pedido = Pedido.objects.get(pk=id)
@@ -509,7 +511,7 @@ def form_pagamento(request, id):
         'form': form,
     }
     return render(request, 'pedido/pagamento.html', contexto)
-
+@login_required
 def editar_pagamento(request, id):
     try:
         pagamento = Pagamento.objects.get(pk=id)
@@ -546,7 +548,7 @@ def editar_pagamento(request, id):
         'pedido': pedido,
     }
     return render(request, 'pedido/pagamento.html', contexto)
-
+@login_required
 def remover_pagamento(request, id):
     try:
         pagamento = Pagamento.objects.get(pk=id)
