@@ -45,7 +45,7 @@
         {% for item in pedido.itempedido_set.all %}
         <tr>
             <td>{{ item.id }}</td>
-            <td><img src="{{ item.produto.img_base64 }}" style="width: 40px; height: 40px;"></td>
+            <td><img src="{{ item.produto.img_base64 }}" style="width: 90px; height: 90px;"></td>
             <td>{{ item.produto.nome }}</td>
             <td>{{ item.qtde }}</td>
             <td>{{ item.preco }}</td>
