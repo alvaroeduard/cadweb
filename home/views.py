@@ -10,7 +10,7 @@ from .models import Pedido, ItemPedido
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def index(request):
     return render(request,'index.html')
 @login_required
