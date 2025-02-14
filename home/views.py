@@ -9,6 +9,7 @@ from django.db import transaction
 from .models import Pedido, ItemPedido
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 @login_required
 def index(request):

@@ -5,33 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cad Web - Login</title>
     
-    <!-- Font Awesome -->
+    <!-- Font Awesome - Ícones -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     
-    <!-- Bootstrap -->
+    <!-- Bootstrap - Framework CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- jQuery UI -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    
-    <!-- Custom CSS -->
-    
+    <style>
+        /* Estilos personalizados */
+        body {
+            background: #f8f9fa; /* Cor de fundo suave */
+        }
+        .card {
+            border-radius: 15px; /* Bordas arredondadas */
+            border: none; /* Remove borda padrão */
+        }
+        .form-control:focus {
+            box-shadow: none; /* Remove sombra padrão do Bootstrap */
+            border-color: #0d6efd; /* Cor da borda ao focar */
+        }
+        .input-group-text {
+            background: #fff; /* Fundo branco para os ícones */
+        }
+    </style>
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100">
+    <!-- Container principal do card -->
     <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
-        <h3 class="test-center mb-3">Cad Web - Login</h3>
+        <!-- Título com ícone -->
+        <h3 class="text-center mb-4"><i class="fas fa-lock me-2"></i>Cad Web - Login</h3>
+        
+        <!-- Seção de mensagens do sistema -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-custom d-flex align-items-center" role="alert">
+                    <i class="fas fa-times-circle error-x"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Formulário de login -->
         <form method="post">
             {% csrf_token %}
-            {{form.as_p}}
-            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+            
+            <!-- Tratamento de erros gerais do formulário -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+                    <i class="fas fa-times-circle me-2"></i>
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+                
+            {% endif %}
+
+            <!-- Campo de usuário -->
+            <div class="mb-3">
+                <label class="form-label">Usuário</label>
+                <div class="input-group">
+                    <!-- Ícone do usuário -->
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <input type="text" 
+                           name="username" 
+                           class="form-control" 
+                           placeholder="Digite seu usuário"
+                           required
+                           autofocus> <!-- Foco automático ao carregar -->
+                </div>
+            </div>
+
+            <!-- Campo de senha -->
+            <div class="mb-4">
+                <label class="form-label">Senha</label>
+                <div class="input-group">
+                    <!-- Ícone de cadeado -->
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" 
+                           name="password" 
+                           class="form-control" 
+                           placeholder="Digite sua senha"
+                           required> <!-- Campo obrigatório -->
+                </div>
+                <!-- Texto de ajuda sobre case sensitivity -->
+                <small class="text-muted">Diferenciamos maiúsculas e minúsculas</small>
+            </div>
+
+            <!-- Botão de submit -->
+            <button type="submit" class="btn btn-primary w-100 py-2">
+                <i class="fas fa-sign-in-alt me-2"></i>Entrar
+            </button>
         </form>
     </div>
-    
 
-    <!-- Scripts -->
+    <!-- Scripts necessários -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap Bundle com Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 </body>
 </html>

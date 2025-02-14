@@ -9,7 +9,6 @@
     {% csrf_token %}    
     {{ form.as_p }}
 
-
     <p>
         <label for="id_categoria_nome">Categoria:</label>
         <!-- autocomplete -->
@@ -68,11 +67,7 @@
 {% block javascript %}
 <script>
 
-
-
-
     $(document).ready(function() {
-
 
         // Configura inicialização das imagens base64 para todo campo da classe img_init
         $('.img_init').each(function() {
@@ -91,7 +86,6 @@
             if (imagemInput) {
                 const reader = new FileReader();
                 reader.readAsDataURL(imagemInput); // Converte a imagem para base64
-
 
                 reader.onload = function() {
                     const imgBase64 = reader.result; // O resultado da conversão
