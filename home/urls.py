@@ -33,4 +33,5 @@ urlpatterns = [
     path('form_pagamento/<int:id>/', views.form_pagamento, name='form_pagamento'),
     path('pagamento/editar/<int:id>/', views.editar_pagamento, name='editar_pagamento'),
     path('pagamento/remover/<int:id>/', views.remover_pagamento, name='remover_pagamento'),
+    path('notafiscal/<int:id>/', views.nota_fiscal, name='notafiscal'),
 ]

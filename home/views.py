@@ -561,3 +561,15 @@ def remover_pagamento(request, id):
     pagamento.delete()
     messages.success(request, 'Pagamento removido com sucesso!')
     return redirect('form_pagamento', id=pedido_id)
+
+def nota_fiscal(request, id):
+    try:
+        # Tenta buscar o pedido pelo ID
+        pedido = Pedido.objects.get(pk=id)
+    except Pedido.DoesNotExist:
+        # Retorna uma página de erro personalizada ou uma mensagem amigável
+        messages.error(request, 'Pedido não encontrado')
+        return redirect('pedido')
+
+    # Renderiza o template passando o pedido como contexto
+    return render(request, 'pedido/notafiscal.html', {'pedido': pedido})

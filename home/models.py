@@ -1,8 +1,10 @@
+from decimal import Decimal, ROUND_HALF_UP
 import locale
 from django.db import models
 from datetime import date
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import hashlib
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
@@ -86,6 +88,31 @@ class Pedido(models.Model):
             return f"Pedido {self.id} - Cliente: {self.cliente.nome} - Status: {self.get_status_display()}"
 
     @property
+    def chave_acesso(self):
+        """Gera uma chave de acesso única baseada no ID do pedido, data do pedido e CPF do cliente."""
+        if self.id is None or self.data_pedido is None or not hasattr(self.cliente, 'cpf'):
+            return None  # Retorna None se o pedido ainda não foi salvo ou não houver CPF
+
+        # Formatação do CPF garantindo 11 dígitos
+        cpf_cliente = str(self.cliente.cpf).zfill(11).replace('.', '').replace('-', '')
+
+        # Ano e mês do pedido
+        ano = self.data_pedido.strftime('%Y')
+        mes = self.data_pedido.strftime('%m')
+
+        # Parâmetros fixos da chave
+        modelo_nf = "55"  # Modelo 55 para NF-e
+        numero_nf = str(self.id).zfill(9)  # Número da nota com 9 dígitos
+        serie_nf = "001"  # Série da NF-e
+        tipo_emissao = "1"  # Emissão normal
+
+        # Geração da chave sem DV
+        chave_sem_dv = f"{ano}{mes}{cpf_cliente}{modelo_nf}{serie_nf}{numero_nf}{tipo_emissao}"
+
+        # Retornar a chave formatada
+        return chave_sem_dv
+
+    @property
     def data_pedidof(self):
         """Retorna a data de nascimento no formato DD/MM/AAAA"""
         if self.data_pedido:
@@ -117,6 +144,41 @@ class Pedido(models.Model):
     def debito(self):
         """Retorna o valor restante a ser pago no pedido."""
         return self.total - self.total_pago
+
+    # === Cálculo dos impostos ===
+    def formatar_decimal(self, valor):
+        """Formata um valor Decimal para ter apenas duas casas decimais."""
+        return valor.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+    @property
+    def icms(self):
+        """Calcula o ICMS (18% sobre o total do pedido)."""
+        return self.formatar_decimal(self.total * Decimal('0.18'))
+
+    @property
+    def ipi(self):
+        """Calcula o IPI (5% sobre o total do pedido)."""
+        return self.formatar_decimal(self.total * Decimal('0.05'))
+
+    @property
+    def pis(self):
+        """Calcula o PIS (1.65% sobre o total do pedido)."""
+        return self.formatar_decimal(self.total * Decimal('0.0165'))
+
+    @property
+    def cofins(self):
+        """Calcula o COFINS (7.6% sobre o total do pedido)."""
+        return self.formatar_decimal(self.total * Decimal('0.076'))
+
+    @property
+    def total_impostos(self):
+        """Calcula o total de impostos somando ICMS, IPI, PIS e COFINS."""
+        return self.formatar_decimal(self.icms + self.ipi + self.pis + self.cofins)
+
+    @property
+    def valorfinal(self):
+        """Calcula o total de impostos + valor total dos itens."""
+        return self.formatar_decimal(self.total_impostos + self.total)
 
 class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
